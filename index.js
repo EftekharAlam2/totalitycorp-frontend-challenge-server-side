@@ -24,7 +24,35 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const dataCollection = client.db("sampleData").collection("collectionData");
+    const productsCollection = client
+      .db("sampleData")
+      .collection("collectionData");
+
+    app.get("/products", async (req, res) => {
+      const result = await productsCollection.find().toArray();
+
+      res.send(result);
+    });
+
+    app.get("/products/:category/:price/:rating", async (req, res) => {
+      const category = req.params.category;
+      const price = parseFloat(req.params.price);
+      const rating = parseFloat(req.params.rating);
+
+      const query = {
+        category: category,
+        price: { $lte: price },
+        rating: { $lte: rating },
+      };
+
+      try {
+        const result = await productsCollection.find(query).toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).send("Internal Server Error");
+      }
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -33,7 +61,7 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
