@@ -28,6 +28,7 @@ async function run() {
       .db("sampleData")
       .collection("collectionData");
     const userCollection = client.db("sampleData").collection("userData");
+    const orderCollection = client.db("sampleData").collection("orderData");
 
     app.get("/products", async (req, res) => {
       const result = await productsCollection.find().toArray();
@@ -73,6 +74,12 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await userCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.post("/order", async (req, res) => {
+      const newOrder = req.body;
+      const result = await orderCollection.insertOne(newOrder);
       res.send(result);
     });
 
