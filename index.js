@@ -27,6 +27,7 @@ async function run() {
     const productsCollection = client
       .db("sampleData")
       .collection("collectionData");
+    const userCollection = client.db("sampleData").collection("userData");
 
     app.get("/products", async (req, res) => {
       const result = await productsCollection.find().toArray();
@@ -56,7 +57,15 @@ async function run() {
 
     app.post("/addproduct", async (req, res) => {
       const newProduct = req.body;
-      const result = await productsCollection.insertOne(newProduct);
+      const result = await userCollection.insertOne(newProduct);
+      res.send(result);
+    });
+
+    app.get("/product/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+
+      const result = await userCollection.find(query).toArray();
       res.send(result);
     });
 
