@@ -54,6 +54,12 @@ async function run() {
       }
     });
 
+    app.post("/addproduct", async (req, res) => {
+      const newProduct = req.body;
+      const result = await productsCollection.insertOne(newProduct);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
